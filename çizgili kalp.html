@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalp Çizimi</title>
+    <style>
+        /* Siyah arka plan ve tam ekran ortalama ayarları */
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="heartCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Çizimin merkezini ekranın ortası olarak belirliyoruz
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // Python'daki matematiksel fonksiyonların JavaScript karşılığı
+        function hearta(k) {
+            return 15 * Math.pow(Math.sin(k), 3);
+        }
+
+        function heartb(k) {
+            return 13 * Math.cos(k) - 5 * Math.cos(2 * k) - 2 * Math.cos(3 * k) - Math.cos(4 * k);
+        }
+
+        // Çizgi rengini ve kalınlığını belirliyoruz (Görseldeki pembe renk)
+        ctx.strokeStyle = '#f73487';
+        ctx.lineWidth = 1;
+
+        let i = 0;
+        const maxAdim = 6000;
+        const buyukluk = 15; // Kalbin ekrandaki boyut çarpanı
+
+        // Animasyon döngüsü
+        function cizimYap() {
+            // Hızlandırmak için her karede (frame) birden fazla çizgi çiziyoruz
+            for (let adim = 0; adim < 10; adim++) {
+                if (i >= maxAdim) return; // Çizim bitince dur
+
+                // Daha pürüzsüz bir çizim için açıyı küçük adımlarla artırıyoruz
+                let k = i * 0.05; 
+
+                let x = hearta(k) * buyukluk;
+                // HTML Canvas'ta Y ekseni aşağı doğru arttığı için Y değerini eksi ile çarpıyoruz
+                let y = -heartb(k) * buyukluk; 
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY); // Merkezden başla (Python'daki goto(0,0) kısmı)
+                ctx.lineTo(centerX + x, centerY + y); // Formülün hesapladığı noktaya çizgi çek
+                ctx.stroke();
+
+                i++;
+            }
+            // Animasyonun akıcı bir şekilde devam etmesini sağlar
+            requestAnimationFrame(cizimYap);
+        }
+
+        // Animasyonu başlat
+        cizimYap();
+    </script>
+
+</body>
+</html>
